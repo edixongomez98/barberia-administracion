@@ -2,80 +2,64 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LA BARBER · Redirigiendo…</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LA BARBER</title>
 
-<!-- 🔗 Redirección automática al admin -->
-<meta http-equiv="refresh" content="0; url=https://edixongomez98.github.io/LA-BARBER/admin.html">
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#c9a227">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="LA BARBER">
+<link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16.png">
+<link rel="apple-touch-icon" href="./img/icon-180.png">
+
+<noscript><meta http-equiv="refresh" content="0; url=./admin.html"></noscript>
 
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
     font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #0d0d0d;
-    color: #f5f5f5;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 20px;
+    background: #0d0d0d; color: #f5f5f5;
+    min-height: 100vh; display: flex; align-items: center;
+    justify-content: center; text-align: center; padding: 20px;
   }
   .box { max-width: 400px; }
   .spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid #2a2a2a;
-    border-top-color: #c9a227;
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-    margin: 0 auto 22px;
+    width: 50px; height: 50px; border: 4px solid #2a2a2a;
+    border-top-color: #c9a227; border-radius: 50%;
+    animation: spin .9s linear infinite; margin: 0 auto 22px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  h1 {
-    font-size: 1.2rem;
-    color: #c9a227;
-    margin-bottom: 8px;
-    letter-spacing: 0.5px;
-  }
-  p {
-    font-size: 0.85rem;
-    color: #999;
-    line-height: 1.6;
-    margin-bottom: 18px;
-  }
+  h1 { font-size: 1.2rem; color: #c9a227; margin-bottom: 8px; letter-spacing: .5px; }
+  p { font-size: .85rem; color: #999; line-height: 1.6; margin-bottom: 18px; }
   a {
-    display: inline-block;
-    padding: 12px 24px;
+    display: inline-block; padding: 12px 24px;
     background: linear-gradient(135deg, #c9a227, #a8861c);
-    color: #000;
-    font-weight: 800;
-    font-size: 0.85rem;
-    text-decoration: none;
-    border-radius: 30px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    color: #000; font-weight: 800; font-size: .85rem; text-decoration: none;
+    border-radius: 30px; letter-spacing: .5px; text-transform: uppercase;
     box-shadow: 0 8px 22px rgba(201,162,39,.35);
-    transition: transform 0.2s;
   }
-  a:hover { transform: translateY(-2px); }
 </style>
 </head>
 <body>
-
 <div class="box">
   <div class="spinner"></div>
   <h1>Redirigiendo…</h1>
-  <p>Te estamos llevando al panel de administración. Si no funciona, haz clic abajo.</p>
-  <a href="https://edixongomez98.github.io/LA-BARBER/admin.html">Abrir panel admin →</a>
+  <p>Te estamos llevando al panel. Si no funciona, haz clic abajo.</p>
+  <a href="./admin.html">Abrir →</a>
 </div>
 
 <script>
-  // Redirección con JavaScript (respaldo del meta refresh)
-  setTimeout(() => {
-    window.location.href = 'https://edixongomez98.github.io/LA-BARBER/admin.html';
-  }, 300);
+  // Registrar el Service Worker (necesario para instalar en Android)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW error', e));
+    });
+  }
+  // Redirección relativa (se queda dentro de la app instalada)
+  setTimeout(() => location.replace('./admin.html'), 600);
 </script>
-
 </body>
 </html>

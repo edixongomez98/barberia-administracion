@@ -3,7 +3,7 @@
    Cambia SOLO la línea VERSION cuando actualices
    ═══════════════════════════════════════════════════════════ */
 
-const VERSION = 'v1.3.0';                    // 👈 ÚNICO lugar
+const VERSION = 'v1.4.0';                    // 👈 ÚNICO lugar
 const CACHE_NAME = `labarber-${VERSION}`;
 
 const ASSETS = [
@@ -12,7 +12,10 @@ const ASSETS = [
   './agendar.html',
   './admin.html',
   './config.js',
-  './manifest.json'
+  './manifest.json',
+  './img/icon-192.png',
+  './img/icon-512.png',
+  './img/icon-maskable-512.png'
 ];
 
 // ─── INSTALL ───
