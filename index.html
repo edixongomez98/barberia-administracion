@@ -2,64 +2,402 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>LA BARBER</title>
-
-<!-- PWA -->
-<link rel="manifest" href="./manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <meta name="theme-color" content="#c9a227">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="LA BARBER">
-<link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16.png">
-<link rel="apple-touch-icon" href="./img/icon-180.png">
+<meta name="description" content="LA BARBER · Panel de Administración">
+<title>LA BARBER · Panel Admin</title>
 
-<noscript><meta http-equiv="refresh" content="0; url=./admin.html"></noscript>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16.png">
+<link rel="apple-touch-icon" href="img/icon-180.png">
 
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { -webkit-text-size-adjust:100%; }
   body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #0d0d0d; color: #f5f5f5;
-    min-height: 100vh; display: flex; align-items: center;
-    justify-content: center; text-align: center; padding: 20px;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(ellipse at top, rgba(201,162,39,.18) 0%, transparent 60%),
+      linear-gradient(180deg, #0a0a0a 0%, #0d0d0d 100%);
+    color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px 20px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    position: relative;
   }
-  .box { max-width: 400px; }
-  .spinner {
-    width: 50px; height: 50px; border: 4px solid #2a2a2a;
-    border-top-color: #c9a227; border-radius: 50%;
-    animation: spin .9s linear infinite; margin: 0 auto 22px;
+
+  /* Patrón de fondo sutil */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 22px,
+      rgba(201,162,39,.03) 22px 24px
+    );
+    pointer-events: none;
+    z-index: 0;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  h1 { font-size: 1.2rem; color: #c9a227; margin-bottom: 8px; letter-spacing: .5px; }
-  p { font-size: .85rem; color: #999; line-height: 1.6; margin-bottom: 18px; }
-  a {
-    display: inline-block; padding: 12px 24px;
+
+  .box {
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    animation: fadeIn .6s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Badge superior */
+  .badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(201,162,39,.15);
+    border: 1px solid rgba(201,162,39,.4);
+    border-radius: 30px;
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #c9a227;
+    font-weight: 700;
+    margin-bottom: 22px;
+    animation: fadeInDown .6s ease;
+  }
+  @keyframes fadeInDown {
+    from { opacity:0; transform: translateY(-14px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* Logo */
+  .logo {
+    font-family: 'Georgia', serif;
+    font-size: clamp(2.4rem, 10vw, 3.2rem);
+    font-weight: 900;
+    letter-spacing: 5px;
+    color: #fff;
+    margin-bottom: 4px;
+    text-shadow: 0 6px 24px rgba(201,162,39,.35);
+    line-height: 1;
+  }
+  .logo span { color: #c9a227; }
+
+  .tagline {
+    font-size: 0.72rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #c9a227;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  /* Icono animado */
+  .icon {
+    font-size: 3.2rem;
+    margin: 16px 0 8px;
+    display: inline-block;
+    animation: swing 3s ease-in-out infinite;
+    filter: drop-shadow(0 8px 20px rgba(201,162,39,.4));
+  }
+  @keyframes swing {
+    0%,100% { transform: rotate(-10deg); }
+    50%     { transform: rotate(10deg); }
+  }
+
+  /* Descripción */
+  .desc {
+    font-size: 0.85rem;
+    color: #bdbdbd;
+    max-width: 320px;
+    margin: 8px auto 30px;
+    line-height: 1.6;
+  }
+
+  /* Separador */
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #c9a227, transparent);
+    margin: 22px auto;
+    border-radius: 2px;
+    opacity: .5;
+  }
+
+  /* Botones */
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    border: none;
+    border-radius: 14px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform .25s cubic-bezier(.2,.8,.3,1.2), box-shadow .3s;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+  .btn:active { transform: scale(.97); }
+
+  /* Botón principal (Entrar) */
+  .btn-primary {
     background: linear-gradient(135deg, #c9a227, #a8861c);
-    color: #000; font-weight: 800; font-size: .85rem; text-decoration: none;
-    border-radius: 30px; letter-spacing: .5px; text-transform: uppercase;
-    box-shadow: 0 8px 22px rgba(201,162,39,.35);
+    color: #000;
+    box-shadow: 0 10px 26px rgba(201,162,39,.4);
+    animation: pulseGold 2.6s ease-in-out infinite;
+  }
+  .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 36px rgba(201,162,39,.6);
+  }
+  @keyframes pulseGold {
+    0%,100% { box-shadow: 0 10px 26px rgba(201,162,39,.4), 0 0 0 0 rgba(201,162,39,.6); }
+    50%     { box-shadow: 0 10px 26px rgba(201,162,39,.4), 0 0 0 14px rgba(201,162,39,0); }
+  }
+
+  .btn-primary .arrow {
+    font-size: 1.1rem;
+    transition: transform .3s;
+  }
+  .btn-primary:hover .arrow { transform: translateX(4px); }
+
+  /* Botón secundario (Instalar) */
+  .btn-secondary {
+    background: linear-gradient(160deg, #1c1c1c, #101010);
+    color: #c9a227;
+    border: 2px solid #c9a227;
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    display: inline-flex;
+  }
+  .btn-secondary.hide { display: none; }
+  .btn-secondary.show { display: inline-flex; animation: fadeInUp .4s ease; }
+  .btn-secondary:hover {
+    background: rgba(201,162,39,.1);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px rgba(201,162,39,.35);
+  }
+
+  @keyframes fadeInUp {
+    from { opacity:0; transform: translateY(10px); }
+    to   { opacity:1; transform: translateY(0); }
+  }
+
+  /* Hint inferior */
+  .hint {
+    font-size: 0.68rem;
+    color: #555;
+    margin-top: 24px;
+    line-height: 1.6;
+    letter-spacing: .3px;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(150%);
+    background: #c9a227;
+    color: #000;
+    padding: 12px 22px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+    transition: transform .4s cubic-bezier(.2,.8,.3,1.2);
+    z-index: 9999;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #e74c3c; color: #fff; }
+
+  /* Ajustes para pantallas muy pequeñas */
+  @media (max-height: 640px) {
+    .icon { font-size: 2.4rem; margin: 10px 0 6px; }
+    .desc { margin-bottom: 22px; }
+    .divider { margin: 16px auto; }
   }
 </style>
 </head>
 <body>
+
 <div class="box">
-  <div class="spinner"></div>
-  <h1>Redirigiendo…</h1>
-  <p>Te estamos llevando al panel. Si no funciona, haz clic abajo.</p>
-  <a href="./admin.html">Abrir →</a>
+
+  <div class="badge">👑 Panel de Administración</div>
+
+  <div class="logo">LA <span>BARBER</span></div>
+  <div class="tagline">Barbería a Domicilio</div>
+
+  <span class="icon">💈</span>
+
+  <p class="desc">
+    Gestiona citas, bloquea días y administra tu barbería desde un solo lugar.
+  </p>
+
+  <div class="divider"></div>
+
+  <div class="buttons">
+
+    <!-- BOTÓN PRINCIPAL: Entrar al panel -->
+    <a href="https://edixongomez98.github.io/LA-BARBER/admin.html" class="btn btn-primary">
+      <span>Entrar al Panel</span>
+      <span class="arrow">→</span>
+    </a>
+
+    <!-- BOTÓN INSTALAR: Solo aparece si no está instalada -->
+    <button type="button" id="btnInstall" class="btn btn-secondary">
+      <span>📲</span>
+      <span>Instalar App</span>
+    </button>
+
+  </div>
+
+  <p class="hint">
+    Instala la app para acceder más rápido desde tu pantalla de inicio.
+  </p>
+
 </div>
 
+<div class="toast" id="toast"></div>
+
 <script>
-  // Registrar el Service Worker (necesario para instalar en Android)
+  /* ═══════════════════════════════════════════
+     REGISTRAR SERVICE WORKER (necesario para PWA)
+     ═══════════════════════════════════════════ */
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW error', e));
+      navigator.serviceWorker.register('sw.js', { scope: './' })
+        .then(reg => {
+          console.log('✅ SW registrado:', reg.scope);
+          setInterval(() => reg.update().catch(() => {}), 60000);
+        })
+        .catch(err => console.warn('⚠️ SW error:', err));
     });
   }
-  // Redirección relativa (se queda dentro de la app instalada)
-  setTimeout(() => location.replace('./admin.html'), 600);
+
+  /* ═══════════════════════════════════════════
+     BOTÓN "INSTALAR APP"
+     Solo aparece si NO está instalada
+     ═══════════════════════════════════════════ */
+  let deferredPrompt = null;
+  const btnInstall = document.getElementById('btnInstall');
+
+  /* Detectar si la app ya está instalada */
+  function estaInstalada() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true
+        || document.referrer.includes('android-app://');
+  }
+
+  /* Mostrar botón cuando el navegador ofrece instalar */
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (!estaInstalada()) {
+      btnInstall.classList.remove('hide');
+    }
+  });
+
+  /* Click en "Instalar App" */
+  btnInstall.addEventListener('click', async () => {
+    if (estaInstalada()) {
+      toast('La app ya está instalada');
+      btnInstall.classList.add('hide');
+      return;
+    }
+
+    /* Android / Chrome */
+    if (deferredPrompt) {
+      btnInstall.style.transform = 'scale(.95)';
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('Instalación:', outcome);
+
+      if (outcome === 'accepted') {
+        toast('🎉 ¡Gracias por instalar LA BARBER!');
+        btnInstall.classList.add('hide');
+      } else {
+        toast('Instalación cancelada');
+      }
+
+      deferredPrompt = null;
+      btnInstall.style.transform = '';
+      return;
+    }
+
+    /* iOS Safari (no soporta beforeinstallprompt) */
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (esIOS && esSafari) {
+      toast('Toca Compartir ⬆️ y elige "Añadir a pantalla de inicio"', true);
+      return;
+    }
+
+    /* Otros navegadores */
+    toast('Abre Chrome, toca el menú ⋮ y elige "Instalar app"', true);
+  });
+
+  /* Detectar cuando se instaló */
+  window.addEventListener('appinstalled', () => {
+    console.log('✅ App instalada');
+    btnInstall.classList.add('hide');
+    deferredPrompt = null;
+    toast('🎉 ¡App instalada! Búscala en tu inicio');
+  });
+
+  /* iOS: mostrar botón después de 2s si es Safari y no está instalada */
+  setTimeout(() => {
+    const esIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const esSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+    if (esIOS && esSafari && !estaInstalada()) {
+      btnInstall.classList.remove('hide');
+    }
+  }, 2000);
+
+  /* Si ya está instalada al cargar → ocultar botón */
+  if (estaInstalada()) {
+    btnInstall.classList.add('hide');
+  }
+
+  /* ═══════════════════════════════════════════
+     TOAST
+     ═══════════════════════════════════════════ */
+  let toastTimer;
+  function toast(msg, error = false) {
+    const t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.className = 'toast show' + (error ? ' error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = 'toast', 3400);
+  }
 </script>
+
 </body>
 </html>

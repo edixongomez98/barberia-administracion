@@ -1,31 +1,28 @@
 /* ═══════════════════════════════════════════════════════════
    🪒 LA BARBER · SERVICE WORKER
-   Cambia SOLO la línea VERSION cuando actualices
+   Cambia VERSION cada vez que actualices
    ═══════════════════════════════════════════════════════════ */
 
-const VERSION = 'v1.4.0';                    // 👈 ÚNICO lugar
-const CACHE_NAME = `labarber-${VERSION}`;
+const VERSION = 'v1.1.0';
+const CACHE_NAME = `labarber-pwa-${VERSION}`;
 
 const ASSETS = [
   './',
   './index.html',
-  './agendar.html',
-  './admin.html',
-  './config.js',
   './manifest.json',
   './img/icon-192.png',
   './img/icon-512.png',
   './img/icon-maskable-512.png'
 ];
 
-// ─── INSTALL ───
+/* ─── INSTALL ─── */
 self.addEventListener('install', (event) => {
   console.log(`📦 SW ${VERSION} instalando…`);
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => Promise.all(
         ASSETS.map(url =>
-          cache.add(url).catch(err => console.warn(`⚠️ No se pudo cachear ${url}`))
+          cache.add(url).catch(() => console.warn(`⚠️ No cacheado: ${url}`))
         )
       ))
       .then(() => {
@@ -35,35 +32,26 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// ─── ACTIVATE ───
+/* ─── ACTIVATE ─── */
 self.addEventListener('activate', (event) => {
   console.log(`🔄 SW ${VERSION} activando…`);
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => {
-              console.log(`🗑️ Eliminando caché antigua: ${key}`);
-              return caches.delete(key);
+        keys.filter(k => k !== CACHE_NAME)
+            .map(k => {
+              console.log(`🗑️ Caché antigua eliminada: ${k}`);
+              return caches.delete(k);
             })
       ))
       .then(() => {
         console.log(`✅ SW ${VERSION} activo`);
-        // Notificar a clientes abiertos
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'SW_ACTIVATED',
-              version: VERSION
-            });
-          });
-        });
         return self.clients.claim();
       })
   );
 });
 
-// ─── FETCH ───
+/* ─── FETCH ─── */
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -81,50 +69,31 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Solo GET
   if (event.request.method !== 'GET') return;
 
-  // Google Fonts → red primero
-  if (url.hostname.includes('fonts.googleapis.com') ||
-      url.hostname.includes('fonts.gstatic.com')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(res => {
+  // Cache first para locales
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).then(res => {
+        if (res && res.status === 200 && res.type === 'basic') {
           const clone = res.clone();
           caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-          return res;
-        })
-        .catch(() => caches.match(event.request))
-    );
-    return;
-  }
-
-  // Recursos locales → cache first
-  event.respondWith(
-    caches.match(event.request)
-      .then(cached => {
-        if (cached) return cached;
-        return fetch(event.request).then(res => {
-          if (res && res.status === 200 && res.type === 'basic') {
-            const clone = res.clone();
-            caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
-          }
-          return res;
-        });
-      })
-      .catch(() => {
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
         }
-      })
+        return res;
+      });
+    }).catch(() => {
+      if (event.request.mode === 'navigate') {
+        return caches.match('./index.html');
+      }
+    })
   );
 });
 
-// ─── MENSAJES ───
+/* ─── MENSAJES ─── */
 self.addEventListener('message', (event) => {
-  if (event.data === 'SKIP_WAITING') {
-    console.log('⏭️ Saltando espera…');
-    self.skipWaiting();
-  }
+  if (event.data === 'SKIP_WAITING') self.skipWaiting();
   if (event.data === 'GET_VERSION') {
     event.ports[0].postMessage({ version: VERSION });
   }
